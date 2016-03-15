@@ -6,6 +6,7 @@
     }
     
     // Settings
+    var activatedByGrafanaLink = true;
     var warningColor = "rgba(237, 129, 40, 0.890196)";
     var dangerColor = "rgba(245, 54, 54, 0.901961)";
     var checkPeriodInSeconds = 5;
@@ -59,6 +60,12 @@
             alert("An error has occurred with the speech synthesis: " + event.error + " Original message: " + message);
         }
         speechApi.speak(utterThis);
+    }
+    
+    if (activatedByGrafanaLink) {
+        // TODO: Hide only specific link
+        var links = document.getElementsByTagName('dash-link')[0];
+        links.style.display = "none";
     }
     
     (function(){
