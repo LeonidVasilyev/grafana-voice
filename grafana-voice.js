@@ -33,6 +33,6 @@ function report(message) {
         setTimeout(arguments.callee, 10000);
     } else
     {
-        setTimeout(arguments.callee, 60000);
+        setTimeout(arguments.callee, 30000);
     }
 })();
