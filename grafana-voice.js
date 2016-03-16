@@ -6,21 +6,19 @@
     }
     
     // Settings
-    var activatedByGrafanaLink = true;
     var warningColor = "rgba(237, 129, 40, 0.890196)";
     var dangerColor = "rgba(245, 54, 54, 0.901961)";
-    var checkPeriodInSeconds = 5;
-    var delayAfterNotifiationInSeconds = 20;
+    var checkPeriodInSeconds = 10;
+    var delayAfterNotifiationInSeconds = 30;
     
     window.onbeforeunload = function() {
         return "You have attempted to leave this page. Voice alerting will be disabled.";
     }
     
     function checkSingleStats() {
-        if (speechApi.pending == true || speechApi.speaking) {
-            return false;
+        if (speechApi.paused || speechApi.pending) {
+            speechApi.resume();
         }
-        
         var isPassed = true;
         var singleStats = document.getElementsByTagName('grafana-panel-singlestat');
         for (var i = 0; i < singleStats.length; ++i) {
@@ -29,7 +27,7 @@
             var isDataLoaded = singleStats[i].querySelector(".alert-error.panel-error") == null;
             if (!isDataLoaded) {
                 isPassed = false;
-                report("DANGER! Can't load " + title + " value" );
+                report("DANGER! Can't load " + title + " value", true);
                 continue;
             }
             
@@ -49,11 +47,17 @@
         return isPassed;
     }
     
-    function report(message) {
-        // Log for investigation purposes
+    function report(message, useLocalService) {
         console.log(message);
         var utterThis = new SpeechSynthesisUtterance(message);
-        // TODO: Check which voices are available and local
+        var voices = window.speechSynthesis.getVoices();
+        if (useLocalService) {
+            // In case speech paused because of connection issues
+            speechApi.cancel();
+            utterThis.voice = voices.filter(function(voice) { return voice.localService == true; })[0];
+        } else {
+            utterThis.voice = voices.filter(function(voice) { return voice.lang == "en-US"; })[0];
+        }
         utterThis.pitch = 0;
         utterThis.rate = 0.9;
         utterThis.onerror = function(event) {
@@ -62,9 +66,10 @@
         speechApi.speak(utterThis);
     }
     
-    if (activatedByGrafanaLink) {
-        // TODO: Hide only specific link
-        var links = document.getElementsByTagName('dash-link')[0];
+    // TODO: Hide only specific link
+    // Hide activation link
+    var links = document.getElementsByTagName('dash-link')[0];
+    if (links != undefined) {
         links.style.display = "none";
     }
     
