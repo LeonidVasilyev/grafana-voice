@@ -16,7 +16,7 @@
     }
     
     function checkSingleStats() {
-        if (speechApi.paused || speechApi.pending) {
+        if (speechApi.paused || speechApi.pending || speechApi.speaking) {
             speechApi.resume();
         }
         var isPassed = true;
@@ -52,8 +52,7 @@
         var utterThis = new SpeechSynthesisUtterance(message);
         var voices = window.speechSynthesis.getVoices();
         if (useLocalService) {
-            // In case speech paused because of connection issues
-            speechApi.cancel();
+            // In case speech paused because of connection issues.
             utterThis.voice = voices.filter(function(voice) { return voice.localService == true; })[0];
         } else {
             utterThis.voice = voices.filter(function(voice) { return voice.lang == "en-US"; })[0];
