@@ -79,7 +79,8 @@
   };
   
   // Warmup voices array
-  var unused = window.speechSynthesis.getVoices();
+  window.speechSynthesis.getVoices();
+  sayLocalized("Voice alerting activated.");
   
   // TODO: Hide only specific link
   var links = document.getElementsByTagName('dash-link')[0];
