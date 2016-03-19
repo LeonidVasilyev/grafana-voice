@@ -52,26 +52,28 @@
   
   function getLocalizedStatusPrefix(status) {
     if (status === Status.CRITICAL) {
-      return "Danger";
+      return "Опасность";
     } else {
-      return "Warning";
+      return "Внимание";
     }
   };
   
   function getLocalizedReportMessage(report) {
     if (report.type === ReportType.VALUE) {
-        return report.metric.title + " value is " + report.metric.value;
+        return "значение " + report.metric.title + " " + report.metric.value;
       } else if (report.type === ReportType.NULL_VALUE) {
-        return report.metric.title + " is not available";
+        return "значение " + report.metric.title + " недоступно";
       } else if (report.type === ReportType.NOT_LOADED) {
-        return "can't load " + report.metric.title + " value";
+        return "не удалось загрузить значение " + report.metric.title;
       }
   };
   
   function sayLocalized(message) {
     var utterThis = new SpeechSynthesisUtterance(message);
     utterThis.voice = window.speechSynthesis.getVoices()
-      .filter(function(voice) { return voice.voiceURI === "Google UK English Male";})[0];
+      .filter(function(voice) { return voice.voiceURI === "Google русский";})[0];
+    utterThis.pitch = 0.9;
+    utterThis.rate = 0.9;
     utterThis.onerror = function(event) {
       alert("An error has occurred with the speech synthesis: " + event.error + " Original message: " + message);
     }
@@ -80,6 +82,7 @@
   
   // Warmup voices array
   var unused = window.speechSynthesis.getVoices();
+  sayLocalized("");
   
   // TODO: Hide only specific link
   var links = document.getElementsByTagName('dash-link')[0];
