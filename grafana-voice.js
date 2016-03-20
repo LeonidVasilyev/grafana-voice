@@ -68,19 +68,26 @@
       }
   };
   
-  function sayLocalized(message) {
+  function sayLocalized(message, retryCount) {
     var utterThis = new SpeechSynthesisUtterance(message);
-    utterThis.voice = window.speechSynthesis.getVoices()
-      .filter(function(voice) { return voice.voiceURI === "Google UK English Male";})[0];
+    var voices = window.speechSynthesis.getVoices()
+      .filter(function(voice) { return voice.voiceURI === "Google UK English Male";});
+    if (voices.length === 0) {
+      if (retryCount === undefined) {
+        setTimeout(sayLocalized, 5000, message, 2);
+      } else if (retryCount > 0) {
+        setTimeout(sayLocalized, 5000, message, --retryCount);
+      } else {
+        console.log("Failed to say message '" + message + "' after 3 retry.");
+      }
+      return;
+    }
+    utterThis.voice = voices[0];
     utterThis.onerror = function(event) {
       alert("An error has occurred with the speech synthesis: " + event.error + " Original message: " + message);
     }
     window.speechSynthesis.speak(utterThis);
   };
-  
-  // Warmup voices array
-  window.speechSynthesis.getVoices();
-  sayLocalized("Voice alerting activated.");
   
   // TODO: Hide only specific link
   var links = document.getElementsByTagName('dash-link')[0];
@@ -91,6 +98,9 @@
   window.onbeforeunload = function() {
     return "You have attempted to leave this page. Voice alerting will be disabled.";
   };
+  
+  console.log("Alerting activated.");
+  sayLocalized("Alerting activated.");
   
   (function(){
         if (checkSingleStats()) {
