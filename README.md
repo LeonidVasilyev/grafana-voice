@@ -1,4 +1,4 @@
-# grafana-voice [For experimental porpuses only]
+# grafana-voice
 Grafana clien side alerting through Web Speech API
 
 ## Usage
