@@ -1,6 +1,7 @@
 # grafana-voice
 Grafana clien side alerting through Web Speech API
 
+For offline audio to work disable "Gesture requirement for media playback" in [chrome://flags](chrome://flags)
 ## Usage
 * Execute code in Chrome developer console
 
