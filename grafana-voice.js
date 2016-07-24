@@ -98,13 +98,13 @@
       } else if (retryCount > 0) {
         setTimeout(sayLocalized, 5000, message, --retryCount);
       } else {
-        console.log("Failed to say message '" + message + "' after 3 retry.");
+        alert("Failed to say message '" + message + "' after 3 retry.");
       }
       return;
     }
     utterThis.voice = voices[0];
     utterThis.onerror = function(event) {
-      alert("An error has occurred with the speech synthesis: " + event.error + " Original message: " + message);
+      alert("An error has occurred with the speech synthesis: " + event.error + ". Original message: " + message);
     }
     
     if (isOnline()) {
@@ -124,11 +124,30 @@
       return false;
     }
   };
-  
-  // TODO: Hide only specific link
-  var links = document.getElementsByTagName('dash-link')[0];
-  if (links != undefined) {
-    links.style.display = "none";
+
+  var timeoutId;
+  var bootstrap = function () {
+    checkSingleStats();
+    timeoutId = setTimeout(bootstrap, 1000);
+  };
+
+  var links = document.querySelectorAll("dash-link a");
+  for (var i = 0, link; link = links[i]; ++i) {
+    if (link.href.indexOf("speechSynthesis") != -1) { 
+      link.style.backgroundColor = "green";
+      link.onclick = function () {
+        if (link.style.backgroundColor === "green") {
+	  link.style.backgroundColor = "red";
+	  clearTimeout(timeoutId);
+	  sayLocalized("Alerting deactivated.");
+	} else {
+	  link.style.backgroundColor = "green";
+	  bootstrap();
+	  sayLocalized("Alerting activated.");
+        }
+      }
+      break;
+    };
   }
   
   window.onbeforeunload = function() {
@@ -136,10 +155,6 @@
   };
   
   sayLocalized("Alerting activated.");
-  
-  var bootstrap = function () {
-    checkSingleStats();
-    setTimeout(bootstrap, 1000);
-  };
+   
   bootstrap();
 })();
