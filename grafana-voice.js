@@ -145,7 +145,8 @@
 	  bootstrap();
 	  sayLocalized("Alerting activated.");
         }
-      }
+	return false;
+      };
       break;
     };
   }
